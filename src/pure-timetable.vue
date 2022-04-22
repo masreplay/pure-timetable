@@ -52,7 +52,7 @@ import {
   CardScheduleDetails as CardSchedule,
   ScheduleDetails,
 } from "@/types";
-import Vue from "vue";
+import Vue, { PropType } from "vue";
 import TimetableCard from "./timetable-card.vue";
 
 interface TimetableData {
@@ -94,7 +94,7 @@ export default Vue.extend({
   },
   props: {
     schedule: {
-      type: Object as () => ScheduleDetails,
+      type: Object as PropType<ScheduleDetails>,
       required: true,
     },
   },

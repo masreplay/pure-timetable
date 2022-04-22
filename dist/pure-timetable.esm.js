@@ -1,48 +1,35 @@
 import Vue from 'vue';
 
-var script = /*#__PURE__*/Vue.extend({
-  name: 'PureTimetable',
-
-  data() {
-    return {
-      counter: 5,
-      initCounter: 5,
-      message: {
-        action: null,
-        amount: null
-      }
-    };
-  },
-
-  computed: {
-    changedBy() {
-      const {
-        message
-      } = this;
-      if (!message.action) return 'initialized';
-      return `${message.action} ${message.amount || ''}`.trim();
+var script$1 = Vue.extend({
+  name: "TimetableCard",
+  props: {
+    card: {
+      type: Object
+    },
+    period: {
+      type: Object
+    },
+    day: {
+      type: Object
     }
-
   },
   methods: {
-    increment(arg) {
-      const amount = typeof arg !== 'number' ? 1 : arg;
-      this.counter += amount;
-      this.message.action = 'incremented by';
-      this.message.amount = amount;
+    clicked() {
+      this.$emit("clicked", this.card, this.day, this.period);
     },
 
-    decrement(arg) {
-      const amount = typeof arg !== 'number' ? 1 : arg;
-      this.counter -= amount;
-      this.message.action = 'decremented by';
-      this.message.amount = amount;
-    },
+    increase_brightness(hex, percent) {
+      // strip the leading # if it's there
+      hex = hex.replace(/^\s*#|\s*$/g, ""); // convert 3 char codes --> 6, e.g. E0F --> EE00FF
 
-    reset() {
-      this.counter = this.initCounter;
-      this.message.action = 'reset';
-      this.message.amount = null;
+      if (hex.length == 3) {
+        hex = hex.replace(/(.)/g, "$1$1");
+      }
+
+      const r = parseInt(hex.substr(0, 2), 16),
+            g = parseInt(hex.substr(2, 2), 16),
+            b = parseInt(hex.substr(4, 2), 16);
+      return "#" + (0 | (1 << 8) + r + (256 - r) * percent / 100).toString(16).substr(1) + (0 | (1 << 8) + g + (256 - g) * percent / 100).toString(16).substr(1) + (0 | (1 << 8) + b + (256 - b) * percent / 100).toString(16).substr(1);
     }
 
   }
@@ -177,6 +164,107 @@ function addStyle(id, css) {
 }
 
 /* script */
+const __vue_script__$1 = script$1;
+/* template */
+
+var __vue_render__$1 = function () {
+  var _vm = this;
+
+  var _h = _vm.$createElement;
+
+  var _c = _vm._self._c || _h;
+
+  return _vm.card != null ? _c('div', {
+    staticClass: "d-flex flex-column card-div justify-content-between",
+    style: {
+      'background-color': _vm.card.lesson.teacher.color || '#ffffff',
+      'outline-color': _vm.increase_brightness(_vm.card.lesson.teacher.color, 50) + " !important"
+    },
+    on: {
+      "click": _vm.clicked
+    }
+  }, [_c('div', {
+    staticClass: "pt-2"
+  }, [_vm._v(_vm._s(_vm.card.lesson.subject.name))]), _vm._v(" "), _vm.card.lesson.room_id != null ? _c('div', [_c('b', [_vm._v("\n      " + _vm._s(_vm.card.lesson.room.name) + "\n    ")])]) : _vm._e(), _vm._v(" "), _vm.card.lesson.teacher_id != null ? _c('div', {
+    staticClass: "pb-2"
+  }, [_vm._v("\n    " + _vm._s(_vm.card.lesson.teacher.name) + "\n  ")]) : _vm._e()]) : _vm._e();
+};
+
+var __vue_staticRenderFns__$1 = [];
+/* style */
+
+const __vue_inject_styles__$1 = function (inject) {
+  if (!inject) return;
+  inject("data-v-4017e4a0_0", {
+    source: ".card-div{height:100%;cursor:pointer}.card-div:hover{height:100%;outline:10px solid!important;border-radius:4px}.justify-content-between{justify-content:space-between!important}",
+    map: undefined,
+    media: undefined
+  });
+};
+/* scoped */
+
+
+const __vue_scope_id__$1 = undefined;
+/* module identifier */
+
+const __vue_module_identifier__$1 = undefined;
+/* functional template */
+
+const __vue_is_functional_template__$1 = false;
+/* style inject SSR */
+
+/* style inject shadow dom */
+
+const __vue_component__$1 = /*#__PURE__*/normalizeComponent({
+  render: __vue_render__$1,
+  staticRenderFns: __vue_staticRenderFns__$1
+}, __vue_inject_styles__$1, __vue_script__$1, __vue_scope_id__$1, __vue_is_functional_template__$1, __vue_module_identifier__$1, false, createInjector, undefined, undefined);
+
+var TimetableCard = __vue_component__$1;
+
+var script = Vue.extend({
+  name: "PureTimetable",
+  components: {
+    TimetableCard
+  },
+
+  data() {
+    return {
+      selectedCard: null,
+      selectedDay: null,
+      selectedPeriod: null
+    };
+  },
+
+  methods: {
+    getCard(period_id, day_id) {
+      for (let card of this.schedule.cards) {
+        if (card.period_id === period_id && card.day_id === day_id) return card;
+      }
+    },
+
+    onCardClick(card, day, period) {
+      this.$emit("onCardClick", card, day, period);
+      this.selectedCard = card;
+      this.selectedDay = day;
+      this.selectedPeriod = period;
+    },
+
+    formatPeriod(value) {
+      const parts = value.split(":");
+      return parts[0] + ":" + parts[1];
+    }
+
+  },
+  props: {
+    schedule: {
+      type: Object,
+      required: true
+    }
+  }
+});
+
+/* script */
 const __vue_script__ = script;
 /* template */
 
@@ -188,32 +276,56 @@ var __vue_render__ = function () {
   var _c = _vm._self._c || _h;
 
   return _c('div', {
-    staticClass: "pure-timetable"
-  }, [_c('p', [_vm._v("The counter was " + _vm._s(_vm.changedBy) + " to "), _c('b', [_vm._v(_vm._s(_vm.counter))]), _vm._v(".")]), _vm._v(" "), _c('button', {
-    on: {
-      "click": _vm.increment
+    staticClass: "table-responsive"
+  }, [_c('table', {
+    staticClass: "table-bordered rounded"
+  }, [_c('thead', [_c('tr', {
+    staticClass: "bottom-bordered"
+  }, [_c('th', {
+    staticStyle: {
+      "border-top": "0px !important",
+      "border-right": "0px !important"
     }
-  }, [_vm._v("\n    Click +1\n  ")]), _vm._v(" "), _c('button', {
-    on: {
-      "click": _vm.decrement
-    }
-  }, [_vm._v("\n    Click -1\n  ")]), _vm._v(" "), _c('button', {
-    on: {
-      "click": function ($event) {
-        return _vm.increment(5);
+  }), _vm._v(" "), _vm._l(_vm.schedule.periods, function (period) {
+    return _c('th', {
+      key: period.id,
+      staticStyle: {
+        "border-top": "0px !important"
+      },
+      attrs: {
+        "scope": "col"
       }
-    }
-  }, [_vm._v("\n    Click +5\n  ")]), _vm._v(" "), _c('button', {
-    on: {
-      "click": function ($event) {
-        return _vm.decrement(5);
+    }, [_vm._v("\n          " + _vm._s(_vm.formatPeriod(period.start_time)) + " -\n          " + _vm._s(_vm.formatPeriod(period.end_time)) + "\n        ")]);
+  })], 2)]), _vm._v(" "), _c('tbody', _vm._l(_vm.schedule.days, function (day) {
+    return _c('tr', {
+      key: day.id
+    }, [_c('td', {
+      staticClass: "td-width bordered",
+      staticStyle: {
+        "border-right": "0px !important"
+      },
+      attrs: {
+        "width": "12.5%"
       }
-    }
-  }, [_vm._v("\n    Click -5\n  ")]), _vm._v(" "), _c('button', {
-    on: {
-      "click": _vm.reset
-    }
-  }, [_vm._v("\n    Reset\n  ")])]);
+    }, [_c('h2', [_vm._v(_vm._s(day.name))])]), _vm._v(" "), _vm._l(_vm.schedule.periods, function (period) {
+      return _c('td', {
+        key: period.id,
+        staticClass: "td-width",
+        attrs: {
+          "width": "12.5%"
+        }
+      }, [_c('TimetableCard', {
+        attrs: {
+          "card": _vm.getCard(period.id, day.id),
+          "period": period,
+          "day": day
+        },
+        on: {
+          "clicked": _vm.onCardClick
+        }
+      })], 1);
+    })], 2);
+  }), 0)])]);
 };
 
 var __vue_staticRenderFns__ = [];
@@ -221,8 +333,8 @@ var __vue_staticRenderFns__ = [];
 
 const __vue_inject_styles__ = function (inject) {
   if (!inject) return;
-  inject("data-v-79c3ce24_0", {
-    source: ".pure-timetable[data-v-79c3ce24]{display:block;width:400px;margin:25px auto;border:1px solid #ccc;background:#eaeaea;text-align:center;padding:25px}.pure-timetable p[data-v-79c3ce24]{margin:0 0 1em}",
+  inject("data-v-2c3fe61a_0", {
+    source: ".table-responsive{overflow-x:auto;-webkit-overflow-scrolling:touch}.table-bordered{width:100%;max-width:100%;border:1px solid #ddd!important;background-color:transparent;border-collapse:collapse;border-spacing:0;display:table;border-collapse:separate;box-sizing:border-box;text-indent:initial;border-spacing:0}.table-bordered>:not(caption):not(.bottom-bordered)>*>*{padding:.5rem .5rem;border-top:1px solid #ddd!important;border-right:1px solid #ddd!important;border-left:1px solid #ddd!important}.bottom-bordered{border-top:0!important}tr{border-width:0 1px;border:1px solid #ddd!important;line-height:20px;min-height:20px;height:20px}tr td{padding:0!important;margin:0!important;text-align:center}td{height:110px}@media (max-width:900px){.td-width{min-width:150px!important}}",
     map: undefined,
     media: undefined
   });
@@ -230,7 +342,7 @@ const __vue_inject_styles__ = function (inject) {
 /* scoped */
 
 
-const __vue_scope_id__ = "data-v-79c3ce24";
+const __vue_scope_id__ = undefined;
 /* module identifier */
 
 const __vue_module_identifier__ = undefined;

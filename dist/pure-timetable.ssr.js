@@ -55,45 +55,92 @@ function _arrayLikeToArray(arr, len) {
 
 function _nonIterableRest() {
   throw new TypeError("Invalid attempt to destructure non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.");
-}var script = /*#__PURE__*/Vue__default["default"].extend({
-  name: 'PureTimetable',
-  // vue component name
-  data: function data() {
-    return {
-      counter: 5,
-      initCounter: 5,
-      message: {
-        action: null,
-        amount: null
-      }
-    };
-  },
-  computed: {
-    changedBy: function changedBy() {
-      var _ref = this,
-          message = _ref.message;
+}
 
-      if (!message.action) return 'initialized';
-      return "".concat(message.action, " ").concat(message.amount || '').trim();
+function _createForOfIteratorHelper(o, allowArrayLike) {
+  var it = typeof Symbol !== "undefined" && o[Symbol.iterator] || o["@@iterator"];
+
+  if (!it) {
+    if (Array.isArray(o) || (it = _unsupportedIterableToArray(o)) || allowArrayLike && o && typeof o.length === "number") {
+      if (it) o = it;
+      var i = 0;
+
+      var F = function () {};
+
+      return {
+        s: F,
+        n: function () {
+          if (i >= o.length) return {
+            done: true
+          };
+          return {
+            done: false,
+            value: o[i++]
+          };
+        },
+        e: function (e) {
+          throw e;
+        },
+        f: F
+      };
+    }
+
+    throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.");
+  }
+
+  var normalCompletion = true,
+      didErr = false,
+      err;
+  return {
+    s: function () {
+      it = it.call(o);
+    },
+    n: function () {
+      var step = it.next();
+      normalCompletion = step.done;
+      return step;
+    },
+    e: function (e) {
+      didErr = true;
+      err = e;
+    },
+    f: function () {
+      try {
+        if (!normalCompletion && it.return != null) it.return();
+      } finally {
+        if (didErr) throw err;
+      }
+    }
+  };
+}var script$1 = Vue__default["default"].extend({
+  name: "TimetableCard",
+  props: {
+    card: {
+      type: Object
+    },
+    period: {
+      type: Object
+    },
+    day: {
+      type: Object
     }
   },
   methods: {
-    increment: function increment(arg) {
-      var amount = typeof arg !== 'number' ? 1 : arg;
-      this.counter += amount;
-      this.message.action = 'incremented by';
-      this.message.amount = amount;
+    clicked: function clicked() {
+      this.$emit("clicked", this.card, this.day, this.period);
     },
-    decrement: function decrement(arg) {
-      var amount = typeof arg !== 'number' ? 1 : arg;
-      this.counter -= amount;
-      this.message.action = 'decremented by';
-      this.message.amount = amount;
-    },
-    reset: function reset() {
-      this.counter = this.initCounter;
-      this.message.action = 'reset';
-      this.message.amount = null;
+    increase_brightness: function increase_brightness(hex, percent) {
+      // strip the leading # if it's there
+      hex = hex.replace(/^\s*#|\s*$/g, ""); // convert 3 char codes --> 6, e.g. E0F --> EE00FF
+
+      if (hex.length == 3) {
+        hex = hex.replace(/(.)/g, "$1$1");
+      }
+
+      var r = parseInt(hex.substr(0, 2), 16),
+          g = parseInt(hex.substr(2, 2), 16),
+          b = parseInt(hex.substr(4, 2), 16);
+      return "#" + (0 | (1 << 8) + r + (256 - r) * percent / 100).toString(16).substr(1) + (0 | (1 << 8) + g + (256 - g) * percent / 100).toString(16).substr(1) + (0 | (1 << 8) + b + (256 - b) * percent / 100).toString(16).substr(1);
     }
   }
 });function normalizeComponent(template, style, script, scopeId, isFunctionalTemplate, moduleIdentifier /* server only */, shadowMode, createInjector, createInjectorSSR, createInjectorShadow) {
@@ -210,6 +257,102 @@ function renderStyles(styles) {
     }
     return css;
 }/* script */
+var __vue_script__$1 = script$1;
+/* template */
+
+var __vue_render__$1 = function __vue_render__() {
+  var _vm = this;
+
+  var _h = _vm.$createElement;
+
+  var _c = _vm._self._c || _h;
+
+  return _vm.card != null ? _c('div', {
+    staticClass: "d-flex flex-column card-div justify-content-between",
+    style: {
+      'background-color': _vm.card.lesson.teacher.color || '#ffffff',
+      'outline-color': _vm.increase_brightness(_vm.card.lesson.teacher.color, 50) + " !important"
+    },
+    on: {
+      "click": _vm.clicked
+    }
+  }, [_vm._ssrNode("<div class=\"pt-2\">" + _vm._ssrEscape(_vm._s(_vm.card.lesson.subject.name)) + "</div> " + (_vm.card.lesson.room_id != null ? "<div><b>" + _vm._ssrEscape("\n      " + _vm._s(_vm.card.lesson.room.name) + "\n    ") + "</b></div>" : "<!---->") + " " + (_vm.card.lesson.teacher_id != null ? "<div class=\"pb-2\">" + _vm._ssrEscape("\n    " + _vm._s(_vm.card.lesson.teacher.name) + "\n  ") + "</div>" : "<!---->"))]) : _vm._e();
+};
+
+var __vue_staticRenderFns__$1 = [];
+/* style */
+
+var __vue_inject_styles__$1 = function __vue_inject_styles__(inject) {
+  if (!inject) return;
+  inject("data-v-4017e4a0_0", {
+    source: ".card-div{height:100%;cursor:pointer}.card-div:hover{height:100%;outline:10px solid!important;border-radius:4px}.justify-content-between{justify-content:space-between!important}",
+    map: undefined,
+    media: undefined
+  });
+};
+/* scoped */
+
+
+var __vue_scope_id__$1 = undefined;
+/* module identifier */
+
+var __vue_module_identifier__$1 = "data-v-4017e4a0";
+/* functional template */
+
+var __vue_is_functional_template__$1 = false;
+/* style inject shadow dom */
+
+var __vue_component__$1 = /*#__PURE__*/normalizeComponent({
+  render: __vue_render__$1,
+  staticRenderFns: __vue_staticRenderFns__$1
+}, __vue_inject_styles__$1, __vue_script__$1, __vue_scope_id__$1, __vue_is_functional_template__$1, __vue_module_identifier__$1, false, undefined, createInjectorSSR, undefined);
+
+var TimetableCard = __vue_component__$1;var script = Vue__default["default"].extend({
+  name: "PureTimetable",
+  components: {
+    TimetableCard: TimetableCard
+  },
+  data: function data() {
+    return {
+      selectedCard: null,
+      selectedDay: null,
+      selectedPeriod: null
+    };
+  },
+  methods: {
+    getCard: function getCard(period_id, day_id) {
+      var _iterator = _createForOfIteratorHelper(this.schedule.cards),
+          _step;
+
+      try {
+        for (_iterator.s(); !(_step = _iterator.n()).done;) {
+          var card = _step.value;
+          if (card.period_id === period_id && card.day_id === day_id) return card;
+        }
+      } catch (err) {
+        _iterator.e(err);
+      } finally {
+        _iterator.f();
+      }
+    },
+    onCardClick: function onCardClick(card, day, period) {
+      this.$emit("onCardClick", card, day, period);
+      this.selectedCard = card;
+      this.selectedDay = day;
+      this.selectedPeriod = period;
+    },
+    formatPeriod: function formatPeriod(value) {
+      var parts = value.split(":");
+      return parts[0] + ":" + parts[1];
+    }
+  },
+  props: {
+    schedule: {
+      type: Object,
+      required: true
+    }
+  }
+});/* script */
 var __vue_script__ = script;
 /* template */
 
@@ -221,8 +364,23 @@ var __vue_render__ = function __vue_render__() {
   var _c = _vm._self._c || _h;
 
   return _c('div', {
-    staticClass: "pure-timetable"
-  }, [_vm._ssrNode("<p data-v-79c3ce24>" + _vm._ssrEscape("The counter was " + _vm._s(_vm.changedBy) + " to ") + "<b data-v-79c3ce24>" + _vm._ssrEscape(_vm._s(_vm.counter)) + "</b>.</p> <button data-v-79c3ce24>\n    Click +1\n  </button> <button data-v-79c3ce24>\n    Click -1\n  </button> <button data-v-79c3ce24>\n    Click +5\n  </button> <button data-v-79c3ce24>\n    Click -5\n  </button> <button data-v-79c3ce24>\n    Reset\n  </button>")]);
+    staticClass: "table-responsive"
+  }, [_vm._ssrNode("<table class=\"table-bordered rounded\">", "</table>", [_vm._ssrNode("<thead><tr class=\"bottom-bordered\"><th style=\"border-top: 0px !important; border-right: 0px !important\"></th> " + _vm._ssrList(_vm.schedule.periods, function (period) {
+    return "<th scope=\"col\" style=\"border-top: 0px !important\">" + _vm._ssrEscape("\n          " + _vm._s(_vm.formatPeriod(period.start_time)) + " -\n          " + _vm._s(_vm.formatPeriod(period.end_time)) + "\n        ") + "</th>";
+  }) + "</tr></thead> "), _vm._ssrNode("<tbody>", "</tbody>", _vm._l(_vm.schedule.days, function (day) {
+    return _vm._ssrNode("<tr>", "</tr>", [_vm._ssrNode("<td width=\"12.5%\" class=\"td-width bordered\" style=\"border-right: 0px !important\"><h2>" + _vm._ssrEscape(_vm._s(day.name)) + "</h2></td> "), _vm._l(_vm.schedule.periods, function (period) {
+      return _vm._ssrNode("<td width=\"12.5%\" class=\"td-width\">", "</td>", [_c('TimetableCard', {
+        attrs: {
+          "card": _vm.getCard(period.id, day.id),
+          "period": period,
+          "day": day
+        },
+        on: {
+          "clicked": _vm.onCardClick
+        }
+      })], 1);
+    })], 2);
+  }), 0)], 2)]);
 };
 
 var __vue_staticRenderFns__ = [];
@@ -230,8 +388,8 @@ var __vue_staticRenderFns__ = [];
 
 var __vue_inject_styles__ = function __vue_inject_styles__(inject) {
   if (!inject) return;
-  inject("data-v-79c3ce24_0", {
-    source: ".pure-timetable[data-v-79c3ce24]{display:block;width:400px;margin:25px auto;border:1px solid #ccc;background:#eaeaea;text-align:center;padding:25px}.pure-timetable p[data-v-79c3ce24]{margin:0 0 1em}",
+  inject("data-v-2c3fe61a_0", {
+    source: ".table-responsive{overflow-x:auto;-webkit-overflow-scrolling:touch}.table-bordered{width:100%;max-width:100%;border:1px solid #ddd!important;background-color:transparent;border-collapse:collapse;border-spacing:0;display:table;border-collapse:separate;box-sizing:border-box;text-indent:initial;border-spacing:0}.table-bordered>:not(caption):not(.bottom-bordered)>*>*{padding:.5rem .5rem;border-top:1px solid #ddd!important;border-right:1px solid #ddd!important;border-left:1px solid #ddd!important}.bottom-bordered{border-top:0!important}tr{border-width:0 1px;border:1px solid #ddd!important;line-height:20px;min-height:20px;height:20px}tr td{padding:0!important;margin:0!important;text-align:center}td{height:110px}@media (max-width:900px){.td-width{min-width:150px!important}}",
     map: undefined,
     media: undefined
   });
@@ -239,10 +397,10 @@ var __vue_inject_styles__ = function __vue_inject_styles__(inject) {
 /* scoped */
 
 
-var __vue_scope_id__ = "data-v-79c3ce24";
+var __vue_scope_id__ = undefined;
 /* module identifier */
 
-var __vue_module_identifier__ = "data-v-79c3ce24";
+var __vue_module_identifier__ = "data-v-2c3fe61a";
 /* functional template */
 
 var __vue_is_functional_template__ = false;

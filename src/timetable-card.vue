@@ -24,7 +24,7 @@
   </div>
 </template>
 <script lang="ts">
-import Vue from "vue";
+import Vue, { PropType } from "vue";
 import {
   DaySchedule,
   PeriodSchedule,
@@ -34,13 +34,13 @@ export default Vue.extend({
   name: "TimetableCard",
   props: {
     card: {
-      type: Object as () => CardSchedule,
+      type: Object as PropType<CardSchedule>,
     },
     period: {
-      type: Object as () => PeriodSchedule,
+      type: Object as PropType<PeriodSchedule>,
     },
     day: {
-      type: Object as () => DaySchedule,
+      type: Object as PropType<DaySchedule>,
     },
   },
   methods: {
