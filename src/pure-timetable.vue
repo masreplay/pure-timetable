@@ -1,88 +1,156 @@
-<script lang="ts">
-import Vue from 'vue';
+<template>
+  <div class="table-responsive">
+    <table class="table-bordered rounded">
+      <thead>
+        <tr class="bottom-bordered">
+          <th
+            style="border-top: 0px !important; border-right: 0px !important"
+          ></th>
+          <th
+            v-for="period in schedule.periods"
+            :key="period.id"
+            scope="col"
+            style="border-top: 0px !important"
+          >
+            {{ formatPeriod(period.start_time) }} -
+            {{ formatPeriod(period.end_time) }}
+          </th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr v-for="day in schedule.days" :key="day.id">
+          <td
+            class="td-width bordered"
+            width="12.5%"
+            style="border-right: 0px !important"
+          >
+            <h2>{{ day.name }}</h2>
+          </td>
+          <td
+            v-for="period in schedule.periods"
+            :key="period.id"
+            width="12.5%"
+            class="td-width"
+          >
+            <TimetableCard
+              :card="getCard(period.id, day.id)"
+              :period="period"
+              :day="day"
+              @clicked="onCardClick"
+            />
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</template>
 
-interface SampleData {
-  counter: number;
-  initCounter: number;
-  message: {
-    action: string | null;
-    amount: number | null;
-  };
+<script lang="ts">
+import {
+  DaySchedule,
+  PeriodSchedule,
+  CardScheduleDetails as CardSchedule,
+  ScheduleDetails,
+} from "@/types";
+import Vue from "vue";
+import TimetableCard from "./timetable-card.vue";
+
+interface TimetableData {
+  selectedCard: CardSchedule | null;
+  selectedDay: DaySchedule | null;
+  selectedPeriod: PeriodSchedule | null;
 }
 
-export default /*#__PURE__*/Vue.extend({
-  name: 'PureTimetable', // vue component name
-  data(): SampleData {
+export default Vue.extend({
+  name: "PureTimetable",
+  components: { TimetableCard },
+  data(): TimetableData {
     return {
-      counter: 5,
-      initCounter: 5,
-      message: {
-        action: null,
-        amount: null,
-      },
+      selectedCard: null,
+      selectedDay: null,
+      selectedPeriod: null,
     };
   },
-  computed: {
-    changedBy() {
-      const { message } = this as SampleData;
-      if (!message.action) return 'initialized';
-      return `${message.action} ${message.amount || ''}`.trim();
+  methods: {
+    getCard(period_id: string, day_id: string): CardSchedule | undefined {
+      for (let card of this.schedule.cards) {
+        if (card.period_id === period_id && card.day_id === day_id) return card;
+      }
+    },
+    onCardClick(
+      card: CardSchedule,
+      day: DaySchedule,
+      period: PeriodSchedule
+    ): void {
+      this.$emit("onCardClick", card, day, period);
+      this.selectedCard = card;
+      this.selectedDay = day;
+      this.selectedPeriod = period;
+    },
+    formatPeriod(value: string): string {
+      const parts = value.split(":");
+      return parts[0] + ":" + parts[1];
     },
   },
-  methods: {
-    increment(arg: Event | number): void {
-      const amount = (typeof arg !== 'number') ? 1 : arg;
-      this.counter += amount;
-      this.message.action = 'incremented by';
-      this.message.amount = amount;
-    },
-    decrement(arg: Event | number): void {
-      const amount = (typeof arg !== 'number') ? 1 : arg;
-      this.counter -= amount;
-      this.message.action = 'decremented by';
-      this.message.amount = amount;
-    },
-    reset(): void {
-      this.counter = this.initCounter;
-      this.message.action = 'reset';
-      this.message.amount = null;
+  props: {
+    schedule: {
+      type: Object as () => ScheduleDetails,
+      required: true,
     },
   },
 });
 </script>
+<style>
+.table-responsive {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
 
-<template>
-  <div class="pure-timetable">
-    <p>The counter was {{ changedBy }} to <b>{{ counter }}</b>.</p>
-    <button @click="increment">
-      Click +1
-    </button>
-    <button @click="decrement">
-      Click -1
-    </button>
-    <button @click="increment(5)">
-      Click +5
-    </button>
-    <button @click="decrement(5)">
-      Click -5
-    </button>
-    <button @click="reset">
-      Reset
-    </button>
-  </div>
-</template>
+.table-bordered {
+  width: 100%;
+  max-width: 100%;
+  border: 1px solid #ddd !important;
+  background-color: transparent;
+  border-collapse: collapse;
+  border-spacing: 0;
+  display: table;
+  border-collapse: separate;
+  box-sizing: border-box;
+  text-indent: initial;
+  border-spacing: 0px;
+}
 
-<style scoped>
-  .pure-timetable {
-    display: block;
-    width: 400px;
-    margin: 25px auto;
-    border: 1px solid #ccc;
-    background: #eaeaea;
-    text-align: center;
-    padding: 25px;
+.table-bordered > :not(caption):not(.bottom-bordered) > * > * {
+  padding: 0.5rem 0.5rem;
+  border-top: 1px solid #ddd !important;
+  border-right: 1px solid #ddd !important;
+  border-left: 1px solid #ddd !important;
+}
+
+.bottom-bordered {
+  border-top: 0px !important;
+}
+
+tr {
+  border-width: 0 1px;
+  border: 1px solid #ddd !important;
+  line-height: 20px;
+  min-height: 20px;
+  height: 20px;
+}
+
+tr td {
+  padding: 0 !important;
+  margin: 0 !important;
+  text-align: center;
+}
+td {
+  height: 110px;
+}
+
+@media (max-width: 900px) {
+  .td-width {
+    min-width: 150px !important;
   }
-  .pure-timetable p {
-    margin: 0 0 1em;
-  }
+}
 </style>

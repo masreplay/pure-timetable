@@ -1,8 +1,7 @@
 {
   "name": "pure-timetable",
   "version": "1.0.0",
-  "description": "Simple and pure timetable",
-  "private": true,
+  "description": "Simple and pure timetable", 
   "main": "dist/pure-timetable.ssr.js",
   "browser": "dist/pure-timetable.esm.js",
   "module": "dist/pure-timetable.esm.js",
