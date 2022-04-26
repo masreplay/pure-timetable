@@ -21,10 +21,16 @@
 [type: ScheduleDetails](https://github.com/masreplay/pure-timetable/blob/master/src/types/ScheduleDetails.ts)
 
 ```ts
-const timetable: ScheduleDetails = {}; //https://github.com/masreplay/pure-timetable/blob/master/src/types/ScheduleDetails.ts
-...
+<template>
+    <Timetable schedule="timetable">
+</template>
 
-<PureTimetable schedule="timetable">
+<script lang="ts or js">
+import Timetable from "pure-timetable";
+
+const timetable: ScheduleDetails = {}; // https://github.com/masreplay/pure-timetable/blob/master/src/types/ScheduleDetails.ts
+
+</script>
 ```
 
 ## images
