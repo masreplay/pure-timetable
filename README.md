@@ -28,7 +28,35 @@
 <script lang="ts or js">
 import Timetable from "pure-timetable";
 
-const timetable: ScheduleDetails = {}; // https://github.com/masreplay/pure-timetable/blob/master/src/types/ScheduleDetails.ts
+// https://github.com/masreplay/pure-timetable/blob/master/src/types/ScheduleDetails.ts
+const timetable: ScheduleDetails = {
+  item: {
+    id: "",
+    name: "",
+    type: ScheduleType.STAGES
+  },
+  cards: [
+    {
+      period_id: "",
+      day_id: "",
+      lesson_id: "",
+    }
+  ],
+  days: [
+    {
+      name: "sunday",
+      id: "",
+    }
+  ],
+  periods: [
+    {
+      start_time: "",
+      end_time: "",
+      id: "",
+      name: "",
+    }
+  ]
+}; 
 
 </script>
 ```
